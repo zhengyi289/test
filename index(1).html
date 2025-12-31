@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>聊天应用</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+  
+  <!-- Tailwind 配置 -->
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#165DFF',
+            secondary: '#F5F7FA',
+            accent: '#00C16E',
+            dark: '#1D2129',
+            light: '#F2F3F5',
+            muted: '#86909C'
+          },
+          fontFamily: {
+            inter: ['Inter', 'system-ui', 'sans-serif'],
+          },
+        },
+      }
+    }
+  </script>
+  
+  <style type="text/tailwindcss">
+    @layer utilities {
+      .content-auto {
+        content-visibility: auto;
+      }
+      .scrollbar-hide {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+      }
+      .scrollbar-hide::-webkit-scrollbar {
+        display: none;
+      }
+      .chat-shadow {
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+      }
+      .message-animation {
+        animation: fadeIn 0.3s ease forwards;
+      }
+      @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+    }
+  </style>
+</head>
+<!-- 1. 移除body的overflow-hidden，允许页面滚动；h-screen改为min-h-screen（最小高度100vh，内容多则自动加长） -->
+<body class="font-inter bg-gray-100 min-h-screen flex flex-col">
+  <!-- 2. 外层容器：h-full改为flex-1，overflow-hidden改为overflow-auto（允许滚动） -->
+  <div class="flex flex-1 overflow-auto">
+    <!-- 聊天列表侧边栏 -->
+    <div id="chatList" class="w-full md:w-80 bg-white border-r border-gray-200 flex flex-col h-full z-10 transition-all duration-300">
+      <!-- 搜索栏 -->
+      <div class="p-4 border-b border-gray-200">
+        <div class="relative">
+          <input type="text" placeholder="搜索聊天..." 
+                 class="w-full py-2 pl-10 pr-4 rounded-lg bg-gray-100 focus:outline-none focus:ring-2 focus:ring-primary/30 transition-all">
+          <i class="fa fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+        </div>
+      </div>
+      
+      <!-- 聊天列表 -->
+      <div class="flex-1 overflow-y-auto scrollbar-hide">
+        <div class="divide-y divide-gray-100">
+          <!-- 聊天项 - 当前选中 -->
+          <div class="chat-item cursor-pointer bg-secondary p-4 flex items-center gap-3 transition-all hover:bg-gray-50 active" 
+               data-id="1" data-name="张三" data-avatar="https://picsum.photos/id/1005/200/200">
+            <div class="relative">
+              <img src="https://picsum.photos/id/1005/200/200" alt="张三" class="w-12 h-12 rounded-full object-cover">
+              <span class="absolute bottom-0 right-0 w-3.5 h-3.5 bg-accent rounded-full border-2 border-white"></span>
+            </div>
+            <div class="flex-1 min-w-0">
+              <div class="flex justify-between items-center">
+                <h3 class="text-dark font-medium text-sm truncate">张三</h3>
+                <span class="text-xs text-muted">12:30</span>
+              </div>
+              <p class="text-sm text-muted truncate mt-1">好的，我们明天见！</p>
+            </div>
+          </div>
+          
+          <!-- 聊天项 -->
+          <div class="chat-item cursor-pointer p-4 flex items-center gap-3 transition-all hover:bg-gray-50" 
+               data-id="2" data-name="李四" data-avatar="https://picsum.photos/id/1012/200/200">
+            <div class="relative">
+              <img src="https://picsum.photos/id/1012/200/200" alt="李四" class="w-12 h-12 rounded-full object-cover">
+              <span class="absolute bottom-0 right-0 w-3.5 h-3.5 bg-gray-300 rounded-full border-2 border-white"></span>
+            </div>
+            <div class="flex-1 min-w-0">
+              <div class="flex justify-between items-center">
+                <h3 class="text-dark font-medium text-sm truncate">李四</h3>
+                <span class="text-xs text-muted">昨天</span>
+              </div>
+              <p class="text-sm text-muted truncate mt-1">项目文档我已经发送到你邮箱了</p>
+            </div>
+          </div>
+          
+          <!-- 聊天项 -->
+          <div class="chat-item cursor-pointer p-4 flex items-center gap-3 transition-all hover:bg-gray-50" 
+               data-id="3" data-name="王五" data-avatar="https://picsum.photos/id/1027/200/200">
+            <div class="relative">
+              <img src="https://picsum.photos/id/1027/200/200" alt="王五" class="w-12 h-12 rounded-full object-cover">
+              <span class="absolute bottom-0 right-0 w-3.5 h-3.5 bg-accent rounded-full border-2 border-white"></span>
+            </div>
+            <div class="flex-1 min-w-0">
+              <div class="flex justify-between items-center">
+                <h3 class="text-dark font-medium text-sm truncate">王五</h3>
+                <span class="text-xs text-muted">周一</span>
+              </div>
+              <p class="text-sm text-muted truncate mt-1">关于这个问题，我觉得我们需要再讨论一下</p>
+            </div>
+          </div>
+          
+          <!-- 聊天项 -->
+          <div class="chat-item cursor-pointer p-4 flex items-center gap-3 transition-all hover:bg-gray-50" 
+               data-id="4" data-name="技术支持" data-avatar="https://picsum.photos/id/1025/200/200">
+            <div class="relative">
+              <img src="https://picsum.photos/id/1025/200/200" alt="技术支持" class="w-12 h-12 rounded-full object-cover">
+              <span class="absolute bottom-0 right-0 w-3.5 h-3.5 bg-accent rounded-full border-2 border-white"></span>
+            </div>
+            <div class="flex-1 min-w-0">
+              <div class="flex justify-between items-center">
+                <h3 class="text-dark font-medium text-sm truncate">技术支持</h3>
+                <span class="text-xs text-muted">上周</span>
+              </div>
+              <p class="text-sm text-muted truncate mt-1">您反馈的问题我们已经修复了</p>
+            </div>
+          </div>
+          
+          <!-- 聊天项 -->
+          <div class="chat-item cursor-pointer p-4 flex items-center gap-3 transition-all hover:bg-gray-50" 
+               data-id="5" data-name="产品团队" data-avatar="https://picsum.photos/id/1074/200/200">
+            <div class="relative">
+              <img src="https://picsum.photos/id/1074/200/200" alt="产品团队" class="w-12 h-12 rounded-full object-cover">
+              <span class="absolute bottom-0 right-0 w-3.5 h-3.5 bg-gray-300 rounded-full border-2 border-white"></span>
+            </div>
+            <div class="flex-1 min-w-0">
+              <div class="flex justify-between items-center">
+                <h3 class="text-dark font-medium text-sm truncate">产品团队</h3>
+                <span class="text-xs text-muted">上周</span>
+              </div>
+              <p class="text-sm text-muted truncate mt-1">下周二我们将进行产品更新说明会</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- 聊天界面 -->
+    <!-- 3. 给聊天界面添加pb-20（底部内边距80px，避开导航栏） -->
+    <div id="chatInterface" class="flex-1 flex flex-col h-full  bg-gray-50 pb-20">
+      <!-- 聊天头部 -->
+      <div class="bg-white p-4 border-b border-gray-200 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <button id="mobileBackBtn" class="md:hidden">
+            <i class="fa fa-arrow-left text-dark"></i>
+          </button>
+          <div class="relative">
+            <img id="currentAvatar" src="https://picsum.photos/id/1005/200/200" alt="当前聊天对象" class="w-10 h-10 rounded-full object-cover">
+            <span class="absolute bottom-0 right-0 w-3 h-3 bg-accent rounded-full border-2 border-white"></span>
+          </div>
+          <div>
+            <h2 id="currentName" class="text-dark font-medium">张三</h2>
+            <p class="text-xs text-muted">在线</p>
+          </div>
+        </div>
+        <div class="flex items-center gap-4">
+          <button class="text-gray-500 hover:text-primary transition-colors">
+            <i class="fa fa-phone"></i>
+          </button>
+          <button class="text-gray-500 hover:text-primary transition-colors">
+            <i class="fa fa-video-camera"></i>
+          </button>
+          <button class="text-gray-500 hover:text-primary transition-colors">
+            <i class="fa fa-ellipsis-v"></i>
+          </button>
+        </div>
+      </div>
+      
+      <!-- 聊天内容区域 -->
+      <div id="chatMessages" class="flex-1 min-h-[850px]  p-4 overflow-y-auto scrollbar-hide space-y-4">
+        <!-- 时间分割线 -->
+        <div class="flex justify-center">
+          <span class="text-xs text-muted bg-gray-200 px-3 py-1 rounded-full">今天 12:25</span>
+        </div>
+        
+        <!-- 对方消息 -->
+        <div class="flex items-end gap-2 max-w-[80%] message-animation">
+          <img src="https://picsum.photos/id/1005/200/200" alt="张三" class="w-8 h-8 rounded-full object-cover">
+          <div class="bg-white p-3 rounded-t-lg rounded-br-lg rounded-bl-lg shadow-sm">
+            <p>嗨，最近怎么样？</p>
+          </div>
+          <span class="text-xs text-muted self-end">12:25</span>
+        </div>
+        
+        <!-- 自己消息 -->
+        <div class="flex items-end justify-end gap-2 max-w-[80%] ml-auto message-animation">
+          <span class="text-xs text-muted self-end">12:26</span>
+          <div class="bg-primary text-white p-3 rounded-t-lg rounded-bl-lg rounded-br-lg shadow-sm">
+            <p>挺好的，你呢？</p>
+          </div>
+        </div>
+        
+        <!-- 对方消息 -->
+        <div class="flex items-end gap-2 max-w-[80%] message-animation">
+          <img src="https://picsum.photos/id/1005/200/200" alt="张三" class="w-8 h-8 rounded-full object-cover">
+          <div class="bg-white p-3 rounded-t-lg rounded-br-lg rounded-bl-lg shadow-sm">
+            <p>我也不错，明天有空吗？想约你出来聊聊</p>
+          </div>
+          <span class="text-xs text-muted self-end">12:28</span>
+        </div>
+        
+        <!-- 自己消息 -->
+        <div class="flex items-end justify-end gap-2 max-w-[80%] ml-auto message-animation">
+          <span class="text-xs text-muted self-end">12:30</span>
+          <div class="bg-primary text-white p-3 rounded-t-lg rounded-bl-lg rounded-br-lg shadow-sm">
+            <p>好的，我们明天见！</p>
+          </div>
+        </div>
+      </div>
+      
+      <!-- 输入区域 -->
+      <div class="bg-white p-3 border-t border-gray-200">
+        <div class="flex items-center gap-2 mb-2">
+          <button class="text-gray-500 hover:text-primary transition-colors p-2">
+            <i class="fa fa-smile-o"></i>
+          </button>
+          <button class="text-gray-500 hover:text-primary transition-colors p-2">
+            <i class="fa fa-paperclip"></i>
+          </button>
+          <button class="text-gray-500 hover:text-primary transition-colors p-2">
+            <i class="fa fa-picture-o"></i>
+          </button>
+          <button class="text-gray-500 hover:text-primary transition-colors p-2">
+            <i class="fa fa-microphone"></i>
+          </button>
+        </div>
+        <div class="flex items-center gap-3">
+          <input id="messageInput" type="text" placeholder="输入消息..." 
+                 class="flex-1 py-2 px-4 rounded-full bg-gray-100 focus:outline-none focus:ring-2 focus:ring-primary/30 transition-all">
+          <button id="sendBtn" class="w-10 h-10 rounded-full bg-primary text-white flex items-center justify-center hover:bg-primary/90 transition-colors">
+            <i class="fa fa-paper-plane"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- 底部导航栏 -->
+  <footer class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 py-2 z-40">
+    <div class="container mx-auto px-6">
+      <div class="flex justify-around">
+        <a href="home·.html" class="flex flex-col items-center text-gray-500 hover:text-primary transition-colors">
+          <i class="fa fa-home text-xl"></i>
+          <span class="text-xs mt-1">首页</span>
+        </a>
+        <a href="renwu.html" class="flex flex-col items-center text-gray-500 hover:text-primary transition-colors">
+          <i class="fa fa-line-chart text-xl"></i>
+          <span class="text-xs mt-1">流程监控</span>
+        </a>
+        <a href="weituofabu.html" class="flex flex-col items-center">
+          <div class="w-14 h-14 rounded-full bg-primary text-white flex items-center justify-center -mt-7 shadow-lg btn-effect">
+            <i class="fa fa-plus text-xl"></i>
+          </div>
+        </a>
+        <a href="index.html" class="flex flex-col items-center text-primary">
+          <i class="fa fa-comments-o text-xl"></i>
+          <span class="text-xs mt-1">对话</span>
+        </a>
+        <a href="personal（1）.html" class="flex flex-col items-center text-gray-500 hover:text-primary transition-colors">
+          <i class="fa fa-user-o text-xl"></i>
+          <span class="text-xs mt-1">我的</span>
+        </a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // 聊天数据 - 实际应用中可能从API获取
+    const chatData = {
+      1: {
+        name: "张三",
+        avatar: "https://picsum.photos/id/1005/200/200",
+        status: "在线",
+        messages: [
+          { sender: "other", text: "嗨，最近怎么样？", time: "12:25" },
+          { sender: "me", text: "挺好的，你呢？", time: "12:26" },
+          { sender: "other", text: "我也不错，明天有空吗？想约你出来聊聊", time: "12:28" },
+          { sender: "me", text: "好的，我们明天见！", time: "12:30" }
+        ]
+      },
+      2: {
+        name: "李四",
+        avatar: "https://picsum.photos/id/1012/200/200",
+        status: "离线",
+        messages: [
+          { sender: "other", text: "你好，关于上周的项目进展...", time: "昨天 09:15" },
+          { sender: "me", text: "我已经完成了我负责的部分", time: "昨天 09:20" },
+          { sender: "other", text: "项目文档我已经发送到你邮箱了", time: "昨天 10:30" }
+        ]
+      },
+      3: {
+        name: "王五",
+        avatar: "https://picsum.photos/id/1027/200/200",
+        status: "在线",
+        messages: [
+          { sender: "other", text: "在吗？关于那个技术问题...", time: "周一 14:00" },
+          { sender: "me", text: "在的，怎么了？", time: "周一 14:02" },
+          { sender: "other", text: "关于这个问题，我觉得我们需要再讨论一下", time: "周一 14:05" }
+        ]
+      },
+      4: {
+        name: "技术支持",
+        avatar: "https://picsum.photos/id/1025/200/200",
+        status: "在线",
+        messages: [
+          { sender: "me", text: "你好，我反馈的那个bug还没修复吗？", time: "上周 10:10" },
+          { sender: "other", text: "我们正在处理，会尽快修复", time: "上周 10:15" },
+          { sender: "other", text: "您反馈的问题我们已经修复了", time: "上周 16:30" }
+        ]
+      },
+      5: {
+        name: "产品团队",
+        avatar: "https://picsum.photos/id/1074/200/200",
+        status: "离线",
+        messages: [
+          { sender: "other", text: "下周二我们将进行产品更新说明会", time: "上周 11:00" },
+          { sender: "me", text: "好的，具体时间是几点？", time: "上周 11:05" },
+          { sender: "other", text: "下午2点，在会议室A", time: "上周 11:10" }
+        ]
+      }
+    };
+
+    // DOM元素
+    const chatItems = document.querySelectorAll('.chat-item');
+    const currentName = document.getElementById('currentName');
+    const currentAvatar = document.getElementById('currentAvatar');
+    const chatMessages = document.getElementById('chatMessages');
+    const messageInput = document.getElementById('messageInput');
+    const sendBtn = document.getElementById('sendBtn');
+    const mobileBackBtn = document.getElementById('mobileBackBtn');
+    const chatList = document.getElementById('chatList');
+    const chatInterface = document.getElementById('chatInterface');
+
+    // 切换聊天
+    function switchChat(chatId) {
+      const chat = chatData[chatId];
+      if (!chat) return;
+      
+      // 更新聊天头部信息
+      currentName.textContent = chat.name;
+      currentAvatar.src = chat.avatar;
+      
+      // 清空并填充聊天消息
+      chatMessages.innerHTML = '';
+      
+      // 添加时间分割线
+      const timeDivider = document.createElement('div');
+      timeDivider.className = 'flex justify-center';
+      timeDivider.innerHTML = `<span class="text-xs text-muted bg-gray-200 px-3 py-1 rounded-full">${getDateString()}</span>`;
+      chatMessages.appendChild(timeDivider);
+      
+      // 添加消息
+      chat.messages.forEach((msg, index) => {
+        setTimeout(() => {
+          const messageEl = document.createElement('div');
+          
+          if (msg.sender === 'other') {
+            messageEl.className = 'flex items-end gap-2 max-w-[80%] message-animation';
+            messageEl.innerHTML = `
+              <img src="${chat.avatar}" alt="${chat.name}" class="w-8 h-8 rounded-full object-cover">
+              <div class="bg-white p-3 rounded-t-lg rounded-br-lg rounded-bl-lg shadow-sm">
+                <p>${msg.text}</p>
+              </div>
+              <span class="text-xs text-muted self-end">${msg.time}</span>
+            `;
+          } else {
+            messageEl.className = 'flex items-end justify-end gap-2 max-w-[80%] ml-auto message-animation';
+            messageEl.innerHTML = `
+              <span class="text-xs text-muted self-end">${msg.time}</span>
+              <div class="bg-primary text-white p-3 rounded-t-lg rounded-bl-lg rounded-br-lg shadow-sm">
+                <p>${msg.text}</p>
+              </div>
+            `;
+          }
+          
+          chatMessages.appendChild(messageEl);
+          // 滚动到底部
+          chatMessages.scrollTop = chatMessages.scrollHeight;
+        }, index * 100); // 错开动画时间，创造连贯感
+      });
+      
+      // 在移动设备上隐藏聊天列表，显示聊天界面
+      if (window.innerWidth < 768) {
+        chatList.classList.add('hidden');
+        chatInterface.classList.remove('hidden');
+      }
+      
+      // 更新选中状态
+      chatItems.forEach(item => item.classList.remove('active', 'bg-secondary'));
+      document.querySelector(`.chat-item[data-id="${chatId}"]`).classList.add('active', 'bg-secondary');
+    }
+
+    // 获取日期字符串
+    function getDateString() {
+      const now = new Date();
+      const hours = now.getHours().toString().padStart(2, '0');
+      const minutes = now.getMinutes().toString().padStart(2, '0');
+      return `今天 ${hours}:${minutes}`;
+    }
+
+    // 发送消息
+    function sendMessage() {
+      const text = messageInput.value.trim();
+      if (!text) return;
+      
+      const now = new Date();
+      const time = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
+      
+      const messageEl = document.createElement('div');
+      messageEl.className = 'flex items-end justify-end gap-2 max-w-[80%] ml-auto message-animation';
+      messageEl.innerHTML = `
+        <span class="text-xs text-muted self-end">${time}</span>
+        <div class="bg-primary text-white p-3 rounded-t-lg rounded-bl-lg rounded-br-lg shadow-sm">
+          <p>${text}</p>
+        </div>
+      `;
+      
+      chatMessages.appendChild(messageEl);
+      messageInput.value = '';
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+      
+      // 在实际应用中，这里会有API调用发送消息到服务器
+      
+      // 模拟对方回复
+      const currentChatId = document.querySelector('.chat-item.active').dataset.id;
+      setTimeout(() => {
+        const replyText = ["好的", "我知道了", "没问题", "稍后回复你", "明白了"][Math.floor(Math.random() * 5)];
+        
+        const replyEl = document.createElement('div');
+        replyEl.className = 'flex items-end gap-2 max-w-[80%] message-animation';
+        replyEl.innerHTML = `
+          <img src="${chatData[currentChatId].avatar}" alt="${chatData[currentChatId].name}" class="w-8 h-8 rounded-full object-cover">
+          <div class="bg-white p-3 rounded-t-lg rounded-br-lg rounded-bl-lg shadow-sm">
+            <p>${replyText}</p>
+          </div>
+          <span class="text-xs text-muted self-end">${time}</span>
+        `;
+        
+        chatMessages.appendChild(replyEl);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+      }, 1000 + Math.random() * 2000);
+    }
+
+    // 事件监听
+    chatItems.forEach(item => {
+      item.addEventListener('click', () => {
+        switchChat(item.dataset.id);
+      });
+    });
+
+    sendBtn.addEventListener('click', sendMessage);
+    
+    messageInput.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        sendMessage();
+      }
+    });
+    
+    // 移动设备返回按钮
+    mobileBackBtn.addEventListener('click', () => {
+      chatList.classList.remove('hidden');
+      chatInterface.classList.add('hidden');
+    });
+    
+    // 初始化 - 显示第一个聊天
+    switchChat('1');
+    
+    // 响应式处理
+    window.addEventListener('resize', () => {
+      if (window.innerWidth >= 768) {
+        chatList.classList.remove('hidden');
+        chatInterface.classList.remove('hidden');
+      } else if (!document.querySelector('.chat-item.active')) {
+        chatInterface.classList.add('hidden');
+      }
+    });
+  </script>
+</body>
+</html>

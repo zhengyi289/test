@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>校园跑腿 - 首页</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+  
+  <!-- 配置Tailwind - 保持与监控页面一致的主题 -->
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#3B82F6',
+            secondary: '#10B981',
+            warning: '#F59E0B',
+            danger: '#EF4444',
+            neutral: '#6B7280',
+            light: '#F9FAFB',
+            dark: '#1F2937'
+          },
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+          },
+        },
+      }
+    }
+  </script>
+  
+  <style type="text/tailwindcss">
+    @layer utilities {
+      .content-auto {
+        content-visibility: auto;
+      }
+      .card-shadow {
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
+      }
+      .btn-effect {
+        @apply transition-all duration-300 hover:shadow-md transform hover:-translate-y-0.5;
+      }
+      .service-item-hover {
+        @apply transition-all duration-200 hover:shadow-lg transform hover:-translate-y-1;
+      }
+      .scrollbar-hide::-webkit-scrollbar {
+        display: none;
+      }
+      .text-gradient {
+        background-clip: text;
+        -webkit-background-clip: text;
+        color: transparent;
+        background-image: linear-gradient(135deg, #3B82F6, #10B981);
+      }
+    }
+  </style>
+</head>
+<body class="bg-gray-50 font-sans text-dark min-h-screen overflow-y-auto">
+  <!-- 固定顶部区域：导航栏 + 搜索框 -->
+  <div class="sticky top-0 bg-gray-50 z-30 shadow-sm">
+    <!-- 顶部导航 -->
+    <header class="bg-white py-4 px-5">
+      <div class="flex justify-between items-center">
+        <div class="text-lg font-bold text-gradient">校园跑腿</div>
+        <div class="flex items-center gap-4">
+          <button class="text-gray-500 hover:text-primary transition-colors">
+            <i class="fa fa-bell-o text-xl"></i>
+          </button>
+          <button class="text-gray-500 hover:text-primary transition-colors">
+            <i class="fa fa-user-o text-xl"></i>
+          </button>
+        </div>
+      </div>
+    </header>
+    
+    <!-- 搜索栏 -->
+    <div class="px-5 pt-4 pb-2">
+      <div class="relative">
+        <input type="text" placeholder="需要什么帮助？搜一搜..." class="w-full bg-white rounded-full py-3 pl-10 pr-4 shadow-sm focus:outline-none focus:ring-2 focus:ring-primary/30">
+        <i class="fa fa-search absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
+      </div>
+    </div>
+  </div>
+  
+  <!-- 页面容器 -->
+  <div class="page-container pt-2">
+    <!-- 首页 -->
+    <div id="home-page" class="page active">      
+      <!-- 服务分类 -->
+      <div class="bg-white py-5 px-5 mb-4">
+        <h2 class="text-lg font-semibold mb-4">服务分类</h2>
+        <div class="grid grid-cols-4 gap-3">
+          <!-- 取快递 -->
+          <div class="service-item-hover flex flex-col items-center">
+            <div class="w-14 h-14 rounded-full bg-blue-100 flex items-center justify-center text-primary">
+              <i class="fa fa-truck text-xl"></i>
+            </div>
+            <span class="text-xs mt-2">取快递</span>
+          </div>
+          
+          <!-- 买饭 -->
+          <div class="service-item-hover flex flex-col items-center">
+            <div class="w-14 h-14 rounded-full bg-yellow-100 flex items-center justify-center text-warning">
+              <i class="fa fa-cutlery text-xl"></i>
+            </div>
+            <span class="text-xs mt-2">买饭</span>
+          </div>
+          
+          <!-- 代取件 -->
+          <div class="service-item-hover flex flex-col items-center">
+            <div class="w-14 h-14 rounded-full bg-purple-100 flex items-center justify-center text-purple-600">
+              <i class="fa fa-envelope-o text-xl"></i>
+            </div>
+            <span class="text-xs mt-2">代取件</span>
+          </div>
+          
+          <!-- 打印 -->
+          <div class="service-item-hover flex flex-col items-center">
+            <div class="w-14 h-14 rounded-full bg-red-100 flex items-center justify-center text-red-600">
+              <i class="fa fa-print text-xl"></i>
+            </div>
+            <span class="text-xs mt-2">打印</span>
+          </div>
+          
+          <!-- 图书馆 -->
+          <div class="service-item-hover flex flex-col items-center">
+            <div class="w-14 h-14 rounded-full bg-green-100 flex items-center justify-center text-secondary">
+              <i class="fa fa-book text-xl"></i>
+            </div>
+            <span class="text-xs mt-2">图书馆</span>
+          </div>
+          
+          <!-- 超市代购 -->
+          <div class="service-item-hover flex flex-col items-center">
+            <div class="w-14 h-14 rounded-full bg-pink-100 flex items-center justify-center text-pink-600">
+              <i class="fa fa-shopping-basket text-xl"></i>
+            </div>
+            <span class="text-xs mt-2">超市代购</span>
+          </div>
+          
+          <!-- 送文件 -->
+          <div class="service-item-hover flex flex-col items-center">
+            <div class="w-14 h-14 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600">
+              <i class="fa fa-file-text-o text-xl"></i>
+            </div>
+            <span class="text-xs mt-2">送文件</span>
+          </div>
+          
+          <!-- 更多 -->
+          <div class="service-item-hover flex flex-col items-center">
+            <div class="w-14 h-14 rounded-full bg-gray-100 flex items-center justify-center text-gray-600">
+              <i class="fa fa-ellipsis-h text-xl"></i>
+            </div>
+            <span class="text-xs mt-2">更多</span>
+          </div>
+        </div>
+      </div>
+      
+      <!-- 热门任务 -->
+      <div class="bg-white py-5 px-5 mb-4">
+        <div class="flex justify-between items-center mb-4">
+          <h2 class="text-lg font-semibold">热门任务</h2>
+          <a href="#" class="text-primary text-sm">更多任务</a>
+        </div>
+        
+        <div class="space-y-4">
+          <!-- 任务1 -->
+          <div class="card-shadow rounded-xl p-3 task-item-hover">
+            <div class="flex justify-between">
+              <span class="bg-blue-100 text-primary text-xs px-2 py-1 rounded-full">取快递</span>
+              <span class="text-primary text-sm font-medium">¥8.00</span>
+            </div>
+            <h3 class="text-base font-semibold mt-2">帮取快递到3号宿舍楼</h3>
+            <div class="mt-2 flex justify-between text-xs text-gray-500">
+              <div><i class="fa fa-map-marker mr-1"></i>东门快递点</div>
+              <div><i class="fa fa-clock-o mr-1"></i>今天 19:00前</div>
+            </div>
+          </div>
+          
+          <!-- 任务2 -->
+          <div class="card-shadow rounded-xl p-3 task-item-hover">
+            <div class="flex justify-between">
+              <span class="bg-yellow-100 text-warning text-xs px-2 py-1 rounded-full">买饭</span>
+              <span class="text-primary text-sm font-medium">¥6.00</span>
+            </div>
+            <h3 class="text-base font-semibold mt-2">三食堂打包黄焖鸡米饭</h3>
+            <div class="mt-2 flex justify-between text-xs text-gray-500">
+              <div><i class="fa fa-map-marker mr-1"></i>三食堂 → 5号宿舍楼</div>
+              <div><i class="fa fa-clock-o mr-1"></i>今天 18:30前</div>
+            </div>
+          </div>
+          
+          <!-- 任务3 -->
+          <div class="card-shadow rounded-xl p-3 task-item-hover">
+            <div class="flex justify-between">
+              <span class="bg-red-100 text-red-600 text-xs px-2 py-1 rounded-full">打印</span>
+              <span class="text-primary text-sm font-medium">¥5.00</span>
+            </div>
+            <h3 class="text-base font-semibold mt-2">打印10页资料送到2号教学楼</h3>
+            <div class="mt-2 flex justify-between text-xs text-gray-500">
+              <div><i class="fa fa-map-marker mr-1"></i>打印店 → 2号教学楼</div>
+              <div><i class="fa fa-clock-o mr-1"></i>今天 14:00前</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- 校园公告 -->
+      <div class="bg-white py-5 px-5 mb-24">
+        <h2 class="text-lg font-semibold mb-4">校园公告</h2>
+        <div class="space-y-3">
+          <div class="flex items-start p-3 border border-gray-100 rounded-lg hover:bg-gray-50 transition-colors">
+            <div class="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary flex-shrink-0">
+              <i class="fa fa-bullhorn"></i>
+            </div>
+            <div class="ml-3">
+              <div class="font-medium text-sm">新用户注册立享3元无门槛优惠券</div>
+              <div class="text-xs text-gray-500 mt-1">截止日期：2023年12月31日</div>
+            </div>
+          </div>
+          
+          <div class="flex items-start p-3 border border-gray-100 rounded-lg hover:bg-gray-50 transition-colors">
+            <div class="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center text-secondary flex-shrink-0">
+              <i class="fa fa-trophy"></i>
+            </div>
+            <div class="ml-3">
+              <div class="font-medium text-sm">校园跑腿员招募中，课余时间轻松赚钱</div>
+              <div class="text-xs text-gray-500 mt-1">点击了解详情 →</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- 底部导航栏 - 与监控页面保持一致 -->
+    <!-- 底部导航栏 -->
+    <footer class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 py-2 z-40">
+      <div class="container mx-auto px-6">
+        <div class="flex justify-around">
+          <a href="home·.html" class="flex flex-col items-center text-primary">
+            <i class="fa fa-home text-xl"></i>
+            <span class="text-xs mt-1">首页</span>
+          </a>
+          <a href="renwu.html" class="flex flex-col items-center text-gray-500 hover:text-primary transition-colors">
+            <i class="fa fa-line-chart text-xl"></i>
+            <span class="text-xs mt-1">流程监控</span>
+          </a>
+          <a href="weituofabu.html" class="flex flex-col items-center">
+            <div class="w-14 h-14 rounded-full bg-primary text-white flex items-center justify-center -mt-7 shadow-lg btn-effect">
+              <i class="fa fa-plus text-xl"></i>
+            </div>
+          </a>
+          <a href="index.html" class="flex flex-col items-center text-gray-500 hover:text-primary transition-colors">
+            <i class="fa fa-comments-o text-xl"></i>
+            <span class="text-xs mt-1">对话</span>
+          </a>
+          <a href="personal（1）.html" class="flex flex-col items-center text-gray-500 hover:text-primary transition-colors">
+            <i class="fa fa-user-o text-xl"></i>
+            <span class="text-xs mt-1">我的</span>
+          </a>
+        </div>
+      </div>
+    </footer>
+	
+  <script>
+    // 获取DOM元素
+    const navLinks = document.querySelectorAll('footer a');
+    const taskItems = document.querySelectorAll('.task-item-hover');
+    const serviceItems = document.querySelectorAll('.service-item-hover');
+    const publishBtn = document.querySelector('footer a:nth-child(3)');
+
+  </script>
+</body>
+</html>

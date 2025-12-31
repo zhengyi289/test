@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>校园帮助平台 - 我的</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Microsoft YaHei', sans-serif; }
+        /* 增加底部 padding 防止被导航栏遮挡 */
+        body { background-color: #f8f9fa; color: #333; min-height: 100vh; padding-bottom: 90px; }
+
+        /* 顶部标题栏 */
+        .title-bar { background-color: #fff; padding: 15px 20px; border-bottom: 1px solid #eee; text-align: center; font-size: 18px; font-weight: 600; position: relative; }
+        .back-btn { position: absolute; left: 20px; top: 50%; transform: translateY(-50%); cursor: pointer; }
+        .container { max-width: 500px; margin: 0 auto; }
+
+        /* 用户信息区域 */
+        .user-card { background-color: #fff; padding: 20px; margin: 15px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); display: flex; align-items: center; cursor: pointer; }
+        .user-avatar { width: 70px; height: 70px; border-radius: 50%; overflow: hidden; margin-right: 15px; background-color: #eee; }
+        .user-avatar img { width: 100%; height: 100%; object-fit: cover; }
+        .user-info { flex: 1; }
+        .user-name { font-size: 18px; font-weight: 500; margin-bottom: 5px; }
+        .user-desc { font-size: 14px; color: #666; }
+        .arrow-right { width: 20px; height: 20px; opacity: 0.5; }
+
+        /* 功能菜单 */
+        .menu-list { margin: 0 15px; }
+        .menu-item { background-color: #fff; padding: 15px; margin-bottom: 10px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); display: flex; align-items: center; cursor: pointer; transition: background-color 0.2s; }
+        .menu-item:hover { background-color: #f5f5f5; }
+        .menu-icon { font-size: 22px; margin-right: 15px; width: 24px; text-align: center; }
+        .menu-text { flex: 1; font-size: 16px; }
+
+        /* 退出按钮 */
+        .logout-btn { width: calc(100% - 30px); margin: 15px; padding: 12px; text-align: center; background-color: #fff; border-radius: 8px; color: #dc3545; font-size: 16px; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+
+        /* 弹窗样式 */
+        .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.5); display: none; justify-content: center; align-items: center; z-index: 1000; }
+        .modal-content { background-color: white; width: 80%; max-width: 300px; border-radius: 8px; padding: 20px; text-align: center; }
+        .modal-title { font-size: 18px; margin-bottom: 15px; font-weight: 500; }
+        .modal-buttons { display: flex; justify-content: space-around; margin-top: 20px; }
+        .modal-btn { padding: 8px 20px; border-radius: 4px; cursor: pointer; border: none; font-size: 16px; }
+        .cancel-btn { background-color: #f5f5f5; color: #333; }
+        .confirm-btn { background-color: #dc3545; color: white; }
+
+        /* 子页面样式 */
+        .subpage { display: none; }
+        .subpage-content { padding: 15px; }
+        .empty-state { text-align: center; padding: 40px 15px; color: #999; }
+        .empty-state i { font-size: 50px; margin-bottom: 15px; opacity: 0.5; }
+        
+        /* 求助列表样式 */
+        .post-item { background-color: #fff; padding: 15px; margin-bottom: 10px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .post-title { font-weight: 500; margin-bottom: 8px; }
+        .post-meta { font-size: 12px; color: #666; display: flex; justify-content: space-between; }
+        
+        /* 设置项样式 */
+        .setting-item { background-color: #fff; padding: 15px; margin-bottom: 1px; display: flex; justify-content: space-between; align-items: center; }
+        .setting-label { font-size: 16px; }
+        .setting-value { color: #666; }
+        .setting-arrow { width: 20px; height: 20px; opacity: 0.5; }
+        
+        /* 表单样式 */
+        .form-group { margin-bottom: 15px; }
+        .form-label { display: block; margin-bottom: 5px; font-size: 14px; color: #666; }
+        .form-control { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px; font-size: 16px; }
+        .save-btn { width: 100%; padding: 12px; background-color: #007bff; color: white; border: none; border-radius: 4px; font-size: 16px; cursor: pointer; margin-top: 20px; }
+    </style>
+</head>
+<body>
+    <!-- 主页面 -->
+    <div id="mainPage">
+        <div class="title-bar">我的</div>
+        <div class="container">
+            <div class="user-card" id="userCard">
+                <div class="user-avatar">
+                    <img src="https://via.placeholder.com/70" alt="用户头像" id="userAvatar">
+                </div>
+                <div class="user-info">
+                    <div class="user-name" id="userName">校园助手</div>
+                    <div class="user-desc" id="userDesc">点击完善个人信息</div>
+                </div>
+                <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgdmlld0JveD0iMCAwIDE2IDE2Ij48cGF0aCBkPSJNMTIgN2wtNiA2LTYtNmExIDEgMCAwIDEgMS41LTQuNWw1LjUgNS41YTEgMSAwIDAgMCAxLjUgMGw1LjUtNS41YTEgMSAwIDAgMSAxLjUgNC41eiIgZmlsbD0iIzQwOUVGRiIvPjwvc3ZnPg==" alt="箭头" class="arrow-right">
+            </div>
+
+            <div class="menu-list">
+                <div class="menu-item" id="myPosts">
+                    <i class="fa fa-pencil menu-icon"></i>
+                    <span class="menu-text">我发布的求助</span>
+                </div>
+                <div class="menu-item" id="receivedPosts">
+                    <i class="fa fa-handshake-o menu-icon"></i>
+                    <span class="menu-text">我接过的求助</span>
+                </div>
+                <div class="menu-item" id="infoSetting">
+                    <i class="fa fa-cog menu-icon"></i>
+                    <span class="menu-text">个人信息设置</span>
+                </div>
+                <div class="menu-item" id="systemSetting">
+                    <i class="fa fa-wrench menu-icon"></i>
+                    <span class="menu-text">系统设置</span>
+                </div>
+            </div>
+
+            <div class="logout-btn" id="logoutBtn">退出登录</div>
+        </div>
+    </div>
+
+    <!-- 我发布的求助页面 -->
+    <div id="myPostsPage" class="subpage">
+        <div class="title-bar">
+            <i class="fa fa-arrow-left back-btn" id="backMyPosts"></i>
+            我发布的求助
+        </div>
+        <div class="subpage-content container">
+            <div class="post-item">
+                <div class="post-title">寻找校园卡，拾到请联系我</div>
+                <div class="post-meta">
+                    <span>2023-10-15</span>
+                    <span>状态：已解决</span>
+                </div>
+            </div>
+            <div class="post-item">
+                <div class="post-title">求借一本《高等数学》教材</div>
+                <div class="post-meta">
+                    <span>2023-10-10</span>
+                    <span>状态：处理中</span>
+                </div>
+            </div>
+            <div class="post-item">
+                <div class="post-title">找人帮忙取快递，重酬</div>
+                <div class="post-meta">
+                    <span>2023-10-05</span>
+                    <span>状态：待接收</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 我接过的求助页面 -->
+    <div id="receivedPostsPage" class="subpage">
+        <div class="title-bar">
+            <i class="fa fa-arrow-left back-btn" id="backReceivedPosts"></i>
+            我接过的求助
+        </div>
+        <div class="subpage-content container">
+            <div class="post-item">
+                <div class="post-title">帮忙占图书馆座位</div>
+                <div class="post-meta">
+                    <span>2023-10-12</span>
+                    <span>状态：已完成</span>
+                </div>
+            </div>
+            <div class="post-item">
+                <div class="post-title">代取外卖，位置在南门</div>
+                <div class="post-meta">
+                    <span>2023-10-08</span>
+                    <span>状态：进行中</span>
+                </div>
+            </div>
+            <div class="empty-state">
+                <i class="fa fa-inbox"></i>
+                <p>没有更多接过的求助</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- 个人信息设置页面 -->
+    <div id="infoSettingPage" class="subpage">
+        <div class="title-bar">
+            <i class="fa fa-arrow-left back-btn" id="backInfoSetting"></i>
+            个人信息设置
+        </div>
+        <div class="subpage-content container">
+            <div class="user-card" style="margin-top: 15px;">
+                <div class="user-avatar">
+                    <img src="https://via.placeholder.com/70" alt="用户头像" id="settingAvatar">
+                </div>
+                <div class="user-info">
+                    <div class="user-name">更换头像</div>
+                    <div class="user-desc">点击头像选择图片</div>
+                </div>
+            </div>
+            
+            <div style="padding: 0 15px;">
+                <div class="form-group">
+                    <label class="form-label">姓名</label>
+                    <input type="text" class="form-control" id="inputName" placeholder="请输入姓名">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">学号</label>
+                    <input type="text" class="form-control" id="inputStudentId" placeholder="请输入学号">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">学院</label>
+                    <input type="text" class="form-control" id="inputCollege" placeholder="请输入学院">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">联系电话</label>
+                    <input type="tel" class="form-control" id="inputPhone" placeholder="请输入联系电话">
+                </div>
+                <button class="save-btn" id="saveInfo">保存修改</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 系统设置页面 -->
+    <div id="systemSettingPage" class="subpage">
+        <div class="title-bar">
+            <i class="fa fa-arrow-left back-btn" id="backSystemSetting"></i>
+            系统设置
+        </div>
+        <div class="subpage-content container">
+            <div class="setting-item">
+                <span class="setting-label">消息通知</span>
+                <label class="relative inline-flex items-center cursor-pointer">
+                    <input type="checkbox" value="" class="sr-only peer" checked>
+                    <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-500"></div>
+                </label>
+            </div>
+            <div class="setting-item">
+                <span class="setting-label">深色模式</span>
+                <label class="relative inline-flex items-center cursor-pointer">
+                    <input type="checkbox" value="" class="sr-only peer">
+                    <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-500"></div>
+                </label>
+            </div>
+            <div class="setting-item">
+                <span class="setting-label">关于我们</span>
+                <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgdmlld0JveD0iMCAwIDE2IDE2Ij48cGF0aCBkPSJNMTIgN2wtNiA2LTYtNmExIDEgMCAwIDEgMS41LTQuNWw1LjUgNS41YTEgMSAwIDAgMCAxLjUgMGw1LjUtNS41YTEgMSAwIDAgMSAxLjUgNC41eiIgZmlsbD0iIzQwOUVGRiIvPjwvc3ZnPg==" alt="箭头" class="setting-arrow">
+            </div>
+            <div class="setting-item">
+                <span class="setting-label">帮助中心</span>
+                <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgdmlld0JveD0iMCAwIDE2IDE2Ij48cGF0aCBkPSJNMTIgN2wtNiA2LTYtNmExIDEgMCAwIDEgMS41LTQuNWw1LjUgNS41YTEgMSAwIDAgMCAxLjUgMGw1LjUtNS41YTEgMSAwIDAgMSAxLjUgNC41eiIgZmlsbD0iIzQwOUVGRiIvPjwvc3ZnPg==" alt="箭头" class="setting-arrow">
+            </div>
+            <div class="setting-item">
+                <span class="setting-label">版本信息</span>
+                <span class="setting-value">v1.0.0</span>
+            </div>
+        </div>
+    </div>
+
+    <footer class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 py-2 z-50">
+      <div class="container mx-auto px-6">
+        <div class="flex justify-around items-end">
+          <a href="home·.html" class="flex flex-col items-center group text-gray-400 hover:text-blue-500 transition-colors">
+            <i class="fa fa-home text-xl mb-1"></i>
+            <span class="text-xs">首页</span>
+          </a>
+          
+          <a href="renwu.html" class="flex flex-col items-center group text-gray-400 hover:text-blue-500 transition-colors">
+            <i class="fa fa-line-chart text-xl mb-1"></i>
+            <span class="text-xs">流程监控</span>
+          </a>
+          
+          <a href="weituofabu.html" class="flex flex-col items-center relative z-10">
+            <div class="w-14 h-14 rounded-full bg-blue-500 text-white flex items-center justify-center -mt-8 shadow-lg transition-transform duration-300 hover:-translate-y-1 hover:shadow-xl border-4 border-gray-50">
+              <i class="fa fa-plus text-xl"></i>
+            </div>
+            <span class="text-xs text-gray-500 mt-1">发布</span>
+          </a>
+          
+          <a href="index.html" class="flex flex-col items-center group text-gray-400 hover:text-blue-500 transition-colors">
+            <i class="fa fa-comments-o text-xl mb-1"></i>
+            <span class="text-xs">对话</span>
+          </a>
+          
+          <a href="personal(1).html" class="flex flex-col items-center group">
+            <i class="fa fa-user-o text-xl mb-1 text-blue-500"></i>
+            <span class="text-xs text-blue-500">我的</span>
+          </a>
+        </div>
+      </div>
+    </footer>
+
+    <div class="modal" id="logoutModal">
+        <div class="modal-content">
+            <div class="modal-title">确认退出</div>
+            <div class="modal-message">确定要退出登录吗？</div>
+            <div class="modal-buttons">
+                <button class="modal-btn cancel-btn" id="cancelLogout">取消</button>
+                <button class="modal-btn confirm-btn" id="confirmLogout">确定</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 模拟用户数据
+        let userData = { 
+            avatar: 'https://via.placeholder.com/70', 
+            name: '校园助手', 
+            desc: '点击完善个人信息',
+            studentId: '',
+            college: '',
+            phone: ''
+        };
+        
+        function init() {
+            // 初始化用户信息
+            document.getElementById('userAvatar').src = userData.avatar;
+            document.getElementById('settingAvatar').src = userData.avatar;
+            document.getElementById('userName').textContent = userData.name;
+            document.getElementById('userDesc').textContent = userData.desc;
+            
+            // 填充表单数据
+            document.getElementById('inputName').value = userData.name;
+            document.getElementById('inputStudentId').value = userData.studentId;
+            document.getElementById('inputCollege').value = userData.college;
+            document.getElementById('inputPhone').value = userData.phone;
+            
+            bindEvents();
+        }
+        
+        function bindEvents() {
+            // 退出登录相关
+            document.getElementById('logoutBtn').addEventListener('click', function() { 
+                document.getElementById('logoutModal').style.display = 'flex'; 
+            });
+            document.getElementById('cancelLogout').addEventListener('click', function() { 
+                document.getElementById('logoutModal').style.display = 'none'; 
+            });
+            document.getElementById('confirmLogout').addEventListener('click', function() { 
+                alert('已退出登录'); 
+                document.getElementById('logoutModal').style.display = 'none'; 
+            });
+            
+            // 个人信息卡片点击
+            document.getElementById('userCard').addEventListener('click', function() { 
+                showSubpage('infoSettingPage');
+            });
+            
+            // 菜单点击事件
+            document.getElementById('myPosts').addEventListener('click', function() {
+                showSubpage('myPostsPage');
+            });
+            document.getElementById('receivedPosts').addEventListener('click', function() {
+                showSubpage('receivedPostsPage');
+            });
+            document.getElementById('infoSetting').addEventListener('click', function() {
+                showSubpage('infoSettingPage');
+            });
+            document.getElementById('systemSetting').addEventListener('click', function() {
+                showSubpage('systemSettingPage');
+            });
+            
+            // 返回按钮事件
+            document.getElementById('backMyPosts').addEventListener('click', function() {
+                showMainPage();
+            });
+            document.getElementById('backReceivedPosts').addEventListener('click', function() {
+                showMainPage();
+            });
+            document.getElementById('backInfoSetting').addEventListener('click', function() {
+                showMainPage();
+            });
+            document.getElementById('backSystemSetting').addEventListener('click', function() {
+                showMainPage();
+            });
+            
+            // 保存个人信息
+            document.getElementById('saveInfo').addEventListener('click', function() {
+                userData.name = document.getElementById('inputName').value || '校园助手';
+                userData.studentId = document.getElementById('inputStudentId').value;
+                userData.college = document.getElementById('inputCollege').value;
+                userData.phone = document.getElementById('inputPhone').value;
+                
+                // 更新主页面显示
+                document.getElementById('userName').textContent = userData.name;
+                document.getElementById('userDesc').textContent = userData.studentId 
+                    ? userData.studentId + ' | ' + userData.college 
+                    : '点击完善个人信息';
+                
+                alert('信息保存成功');
+                showMainPage();
+            });
+            
+            // 更换头像
+            document.getElementById('settingAvatar').parentElement.addEventListener('click', function() {
+                alert('请选择图片更换头像');
+            });
+        }
+        
+        // 显示子页面
+        function showSubpage(pageId) {
+            document.getElementById('mainPage').style.display = 'none';
+            document.getElementById(pageId).style.display = 'block';
+        }
+        
+        // 显示主页面
+        function showMainPage() {
+            // 隐藏所有子页面
+            document.querySelectorAll('.subpage').forEach(page => {
+                page.style.display = 'none';
+            });
+            // 显示主页面
+            document.getElementById('mainPage').style.display = 'block';
+        }
+        
+        window.onload = init;
+    </script>
+</body>
+</html>
