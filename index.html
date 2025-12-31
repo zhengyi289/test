@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>表单事件练习</title>
+</head>
+<body>
+    <form id="myForm">
+        <h3>表单数据提交</h3>
+        <div>
+            <label>用户名：</label>
+            <input type="text" name="username">
+        </div>
+        <div>
+            <label>密码：</label>
+            <input type="password" name="password">
+        </div>
+        <div>
+            <input type="submit" value="提交">
+            <input type="reset" value="重置">
+        </div>
+    </form>
+    <div id="message"></div>
+
+    <script>
+        const form = document.getElementById('myForm');
+        const message = document.getElementById('message');
+
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const username = form.username.value;
+            const password = form.password.value;
+            message.textContent = `提交成功！用户名：${username}，密码：${password}`;
+        });
+
+        form.addEventListener('reset', function() {
+            message.textContent = '表单已重置';
+        });
+    </script>
+</body>
+</html>
